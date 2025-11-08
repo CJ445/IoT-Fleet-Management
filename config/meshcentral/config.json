@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "cert": "192.168.83.161",
+    "port": 443,
+    "redirPort": 80,
+    "allowLoginToken": true,
+    "allowFraming": true,
+    "webRTC": true,
+    "cookieIpCheck": false,
+    "allowPublicPing": false,
+    "agentPing": 60,
+    "agentPong": 60,
+    "webrtc": true,
+    "compression": true,
+    "wsCompression": true,
+    "agentCoreDump": false,
+    "useFrameLogging": false,
+    "selfUpdate": true
+  },
+  "domains": {
+    "": {
+      "title": "IoT Fleet Management",
+      "title2": "Robotics Lab",
+      "minify": true,
+      "newAccounts": true,
+      "certUrl": "https://192.168.83.161:443"
+    }
+  }
+}

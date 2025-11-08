@@ -1,0 +1,79 @@
+version: "3.9"
+
+name: iot-telemetry
+
+networks:
+  fleet_net:
+    external: 
+      name: core-services_fleet_net
+
+services:
+
+  tb-postgres:
+    image: postgres:14
+    container_name: tb-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: thingsboard
+      POSTGRES_USER: tb_user
+      POSTGRES_PASSWORD: tb_pass
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./data/tb-postgres:/var/lib/postgresql/data
+    networks:
+      - fleet_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tb_user -d thingsboard"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  thingsboard:
+    image: thingsboard/tb-postgres:latest
+    container_name: thingsboard
+    restart: always
+    depends_on:
+      tb-postgres:
+        condition: service_healthy
+    environment:
+      TB_QUEUE_TYPE: in-memory
+      SPRING_DATASOURCE_URL: jdbc:postgresql://tb-postgres:5432/thingsboard
+      SPRING_DATASOURCE_USERNAME: tb_user
+      SPRING_DATASOURCE_PASSWORD: tb_pass
+      TB_DATABASE_ENTITIES_TYPE: sql
+      DATABASE_ENTITIES_TYPE: sql
+      DATABASE_TS_TYPE: sql
+    ports:
+      - "0.0.0.0:9090:9090"
+      - "0.0.0.0:1884:1883"
+      - "0.0.0.0:5683:5683/udp"
+    volumes:
+      - ./data/thingsboard:/data
+    networks:
+      - fleet_net
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    restart: always
+    volumes:
+      - ./config/mosquitto:/mosquitto/config
+      - ./data/mosquitto:/mosquitto/data
+    ports:
+      - "0.0.0.0:1883:1883"
+    networks:
+      - fleet_net
+
+  nodered:
+    image: nodered/node-red:latest
+    container_name: nodered
+    restart: always
+    ports:
+      - "0.0.0.0:1880:1880"
+    volumes:
+      - ./data/nodered:/data
+    environment:
+      - MQTT_BROKER=mosquitto
+      - THINGSBOARD_HOST=thingsboard
+    networks:
+      - fleet_net

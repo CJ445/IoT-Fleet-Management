@@ -1,0 +1,104 @@
+version: "3.9"
+
+name: core-services
+
+networks:
+  fleet_net:
+    external: false
+
+services:
+
+  postgres:
+    image: postgres:14
+    container_name: mender-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: mender
+      POSTGRES_USER: mender
+      POSTGRES_PASSWORD: menderpass
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - fleet_net
+
+  mongo:
+    image: mongo:6
+    container_name: mender-mongo
+    restart: always
+    volumes:
+      - ./data/mongo:/data/db
+    networks:
+      - fleet_net
+
+  redis:
+    image: redis:7
+    container_name: mender-redis
+    restart: always
+    networks:
+      - fleet_net
+
+  minio:
+    image: minio/minio:latest
+    container_name: mender-minio
+    restart: always
+    command: server /data
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - ./data/minio:/data
+    ports:
+      - "192.168.83.161:9000:9000"
+    networks:
+      - fleet_net
+
+
+
+  registry:
+    image: registry:2
+    container_name: docker-registry
+    restart: always
+    environment:
+      - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/data
+      - REGISTRY_HTTP_ADDR=0.0.0.0:5000
+    ports:
+      - "192.168.83.161:5000:5000"
+    volumes:
+      - ./data/registry:/data
+    networks:
+      - fleet_net
+
+  registry-ui:
+    image: joxit/docker-registry-ui:latest
+    container_name: registry-ui
+    restart: always
+    environment:
+      - REGISTRY_TITLE=Fleet Container Registry
+      - REGISTRY_URL=http://registry:5000
+      - SINGLE_REGISTRY=true
+    ports:
+      - "192.168.83.161:8081:80"
+    depends_on:
+      - registry
+    networks:
+      - fleet_net
+
+  meshcentral:
+    image: ghcr.io/ylianst/meshcentral:latest
+    container_name: meshcentral
+    restart: always
+    environment:
+      - HOSTNAME=192.168.83.161
+      - REVERSE_PROXY=false
+      - IFRAME=true
+      - ALLOW_NEW_ACCOUNTS=true
+      - WEBRTC=true
+    ports:
+      - "0.0.0.0:443:443"
+      - "0.0.0.0:4430:443"
+      - "0.0.0.0:8086:80"
+    volumes:
+      - ./data/meshcentral:/meshcentral-data
+      - ./config/meshcentral:/opt/meshcentral/meshcentral-data
+    networks:
+      - fleet_net
