@@ -378,8 +378,24 @@ This platform integrates:
 
 **Star ⭐ this repo if you find it useful!**
 
+
+## Screenshots
+<img width="2879" height="1578" alt="image" src="https://github.com/user-attachments/assets/393571ed-552c-4643-a0b9-c632ff7d1c7e" />
+
+<img width="2879" height="1578" alt="image" src="https://github.com/user-attachments/assets/7ea58937-83f5-4ff0-9d7f-d57e26a78d82" />
+
+<img width="2879" height="1578" alt="image" src="https://github.com/user-attachments/assets/9cce081d-64f2-42ad-a232-ad8649a32688" />
+
+<img width="2879" height="1578" alt="image" src="https://github.com/user-attachments/assets/95390bf8-7ef9-4778-be80-bf70d4405b18" />
+
+
+<img width="2879" height="1578" alt="image" src="https://github.com/user-attachments/assets/6ab07998-1f44-4377-b21d-2dee61bf2cb1" />
+
+<img width="2879" height="1578" alt="image" src="https://github.com/user-attachments/assets/5d7ef00e-82d3-429a-a855-140ec3895819" />
+
 ---
 
 **Version**: 1.0.0
 **Last Updated**: November 2025
 **Status**: Production Ready 🟢
+
